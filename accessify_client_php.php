@@ -1,7 +1,10 @@
 <?php
 /**
+ * A generic PHP library to facilitate Accessify Wiki client plugins for CMSs.
  *
  * @author Nick Freear, 29 May 2014.
+ * @link https://github.com/nfreear/accessify-wiki
+ * @package Accessify_Client_Php
  */
 
 class Accessify_Client_Php {
