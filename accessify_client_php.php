@@ -16,6 +16,7 @@ class Accessify_Client_Php {
   const APP_ID   = 'accessify-client-php';
   const FIX_OPT  = '&min=1&callback=__accessify_IPG&app=';
   const SITE_ID_REGEX = '/^Fix:[\w\_]+$/';
+  const GA_ANALYTICS_ID = 'UA-40194374-4';
 
   const Q_SIMPLE = 'SIMPLE_OPTIMIZATIONS';
   const Q_WHITE  = 'WHITESPACE_ONLY';
@@ -48,10 +49,25 @@ class Accessify_Client_Php {
       pat = /debug/,
       debug = G.debug || L.search.match(pat) || L.hash.match(pat);
 
+
     function log(s) {
       window.console && debug &&
         console.log(arguments.length > 1 ? arguments : s);
     }
+
+    function do_post_message(data, id, origin) {
+      var W = window,
+        id = id || "ACCESSIFY_CLIENT",
+        mo = DL.search.match(/origin=([^&]+)/),
+        origin = origin || (mo ? mo[1] : null);
+
+      if (/*W.location === W.parent.location
+        || */ typeof W.postMessage === "undefined" || !W.JSON) {
+        return;
+      }
+      W.parent.postMessage(id + "=" + JSON.stringify(data), origin);
+    }
+
 
     if (G.result) {
       return log("AccessifyHTML5: already run");
@@ -62,7 +78,44 @@ class Accessify_Client_Php {
     G.result = AccessifyHTML5(false, fixes);
 
     log(G.result);
+
+    do_post_message(G.result);
   }
+<?php
+  }
+
+
+  public function print_analytics_javascript($ga_property_id = TRUE) {
+    if (!$ga_property_id) return;
+
+    $ga_property_id = is_string($ga_property_id) ? $ga_property_id : self::GA_ANALYTICS_ID;
+    $tname = 'acfyWikiTracker';
+    ?>
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', <?php echo json_encode($ga_property_id) ?>, 'auto', { name: '<?php echo $tname ?>' });
+  ga('<?php echo $tname ?>.send', 'pageview');
+
+
+  window.addEventListener("message", function (event) {
+    /*if (event.origin !== "http://example.org:8080") {
+      return;
+    }*/
+
+    var md = event.data.match(/(ACCESSIFY_CLIENT)=(\{.*\};?$/),
+      data = window.JSON && md && md[ 2 ];
+
+    if (data) {
+
+    }
+    // ...
+  }, false);
+
+</script>
 <?php
   }
 
