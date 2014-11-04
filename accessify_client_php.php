@@ -36,8 +36,7 @@ class Accessify_Client_Php {
   /**
   * @link http://accessify.wikia.com/wiki/Build_fix_js?q=Fix:Example_fixes
   */
-  protected function print_glue_javascript() {
-    ?>
+  protected function print_glue_javascript() { ?>
 
   AC5U = window.AC5U || {};
 
@@ -45,24 +44,23 @@ class Accessify_Client_Php {
     "use strict";
 
     var G = AC5U,
-      L = document.location,
+      W = window,
+      L = W.location,
       pat = /debug/,
       debug = G.debug || L.search.match(pat) || L.hash.match(pat);
 
-
     function log(s) {
-      window.console && debug &&
-        console.log(arguments.length > 1 ? arguments : s);
+      W.console && debug && console.log(arguments.length > 1 ? arguments : s);
     }
 
     function do_post_message(data, id, origin) {
-      var W = window,
+      var
         id = id || "ACCESSIFY_CLIENT",
-        mo = DL.search.match(/origin=([^&]+)/),
+        mo = L.search.match(/origin=([^&]+)/),
         origin = origin || (mo ? mo[1] : null);
 
-      if (/*W.location === W.parent.location
-        || */ typeof W.postMessage === "undefined" || !W.JSON) {
+      if (W.location === W.parent.location
+        || typeof W.postMessage === "undefined" || !W.JSON) {
         return;
       }
       W.parent.postMessage(id + "=" + JSON.stringify(data), origin);
@@ -120,8 +118,7 @@ class Accessify_Client_Php {
   }
 
 
-  public function print_fix_test_scripts() {
-    ?>
+  public function print_fix_test_scripts() { ?>
     <script src="<?php echo $this->js_library_url() ?>" id="accessify-js"></script>
     <script><?php $this->print_glue_javascript() ?></script>
     <script src="<?php echo $this->jsonp_fix_url() ?>"></script>
